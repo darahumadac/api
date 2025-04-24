@@ -1,4 +1,6 @@
 using api.Contracts.Responses;
+using api.Models;
+using api.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,11 +8,24 @@ namespace api.Endpoints;
 
 public static partial class EmployeesEndpoints
 {
-    public static async Task<Ok<IEnumerable<EmployeeResponse>>> HandleGetEmployeesAsync([FromQuery] string name)
+    public static async Task<Ok<IEnumerable<EmployeeResponse>>> HandleGetEmployeesAsync([FromQuery] string? company, IRepository<Employee> employeeService)
     {
-        var result = new List<EmployeeResponse>()
-            .Where(r => string.IsNullOrEmpty(name) || r.Name == name);
-        return await Task.FromResult(TypedResults.Ok(result));
+        var results = await employeeService.GetAll(e => string.IsNullOrEmpty(company) || e.Company != null && company.ToUpper() == e.Company.Name);
+        var response = results
+            .OrderByDescending(e => e.DaysWorked)
+            .ThenBy(e => e.Name)
+            .Select(
+            e => new EmployeeResponse(
+                Id: e.Id,
+                Name: e.Name,
+                Email: e.Email,
+                Phone: e.Phone,
+                Gender: e.Gender,
+                DaysWorked: e.DaysWorked,
+                CompanyName: e.Company?.Name,
+                PhotoUrl: e.PhotoUrl
+            ));
+        return await Task.FromResult(TypedResults.Ok(response));
     }
     public static async Task<Ok<string>> HandleGetEmployeeAsync()
     {

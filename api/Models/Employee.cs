@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace api.Models;
@@ -16,4 +17,7 @@ public class Employee : Entity
     public string? CompanyId { get; set; }
     public Company? Company { get; set; }
     public DateTime? StartDate { get; set; }
+
+    [NotMapped]
+    public int DaysWorked => StartDate == null ? 0 : DateTime.UtcNow.Subtract((DateTime)StartDate!).Days;
 }

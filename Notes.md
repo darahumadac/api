@@ -107,10 +107,65 @@ mkdir Database Models
 ### Creating Models
 
 - Ensure they have `CreatedDate`, `UpdatedDate`, `byte[] ETag` properties for audit and concurrency checks
-- Ensure that _properties with value generation has default value of null / are uninitialized_
-- Ensure that _constraints for the properties_ are configured using `ComponentModel.DataAnnotations`
-- Ensure that the _indexes_ and _unique indexes_ are created e.g. How to determine whether a record for the model is duplicated i.e. what is the Unique Index for the model?
-- Ensure that _navigation properties and the navigation property id_ is present in the model if there are any dependencies
+- Ensure that **properties with value generation has default value of null / are uninitialized**
+- Ensure that **constraints for the properties** are configured using `ComponentModel.DataAnnotations`
+- Ensure that the **indexes** and **unique indexes** are created e.g. How to determine whether a record for the model is duplicated i.e. what is the Unique Index for the model?
+- Ensure that **navigation properties and the navigation property id** is present in the model if there are any dependencies
+- Ensure that properties that can be computed are included in the model, but are not mapped
+
+### Creating Services
+- Create an interface `IRepository<T>` to contain all the methods for GetAll(),Get(), Add(), Update(), Delete()
+```c#
+// IRepository.cs
+public interface IRepository<T> where T : class
+{
+    //GET
+
+    //POST
+
+    //PUT
+
+    //DELETE
+}
+```
+- Implement the `IRepository` interface for each service and register the service in `Program.cs`. Create an extension class for the services to be more organized
+```c#
+// EmployeeService.cs
+public class EmployeeService : IRepository<Employee>
+{
+    private readonly AppDbContext dbContext;
+    public EmployeeService(AppDbContext dbContext)
+    {
+        this.dbContext = dbContext;
+    }
+    // IRepository implementation here...
+}
+
+//Program.cs - Register the service
+app.Services.AddScoped<IRepositoryService<Employee>, EmployeeService>();
+
+//Optional: Create an extension method for adding services
+public static class ServiceExtensions
+{
+    public static IServiceCollection AddEmployeeServices(this IServiceCollection services)
+    {
+        services.AddScoped<IRepositoryService<Employee>, EmployeeService>();
+        return services;
+    }
+}
+```
+
+#### IRepository<T>
+
+- Pass a condition/query/filter to a method as `Expression<Func<T, bool> condition> condition` when using it to query the `DbSet<T>` so that it can be passed to the where clause as `.Where(conditon)`
+
+## Testing APIs
+[Reference](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/test-min-api?view=aspnetcore-9.0)
+- Create unit test for each **Service implementation** by configuring and using In-Memory database
+    - (Reference)[https://github.com/dotnet/AspNetCore.Docs.Samples/blob/main/fundamentals/minimal-apis/samples/MinApiTestsSample/UnitTests/TodoInMemoryTests.cs]
+- Create unit test for the **API Endpoint Handler methods** by mocking the service implementations using `Moq`
+    - [Reference](https://github.com/dotnet/AspNetCore.Docs.Samples/blob/main/fundamentals/minimal-apis/samples/MinApiTestsSample/UnitTests/TodoMoqTests.cs)
+- Create integration tests for the API endpoints using `WebApplicationFactory<TEntrypoint>` and `HttpClient`. This is where query strings are tested
 
 ### Docker
 

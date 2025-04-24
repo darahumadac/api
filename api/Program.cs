@@ -2,6 +2,7 @@
 
 using api.Database;
 using api.Endpoints;
+using api.Services;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,6 +25,7 @@ if (!builder.Environment.IsDevelopment() || !appDbConnectionStringBuilder.Integr
 }
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(appDbConnectionStringBuilder.ConnectionString));
 
+builder.Services.AddEmployeeServices();
 
 var app = builder.Build();
 

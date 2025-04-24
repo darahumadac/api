@@ -2,9 +2,8 @@
 
 #Employees
 GET {{api_HostAddress}}/employees/
-Accept: application/json
 ###
-GET {{api_HostAddress}}/employees/1
+GET {{api_HostAddress}}/employees?company=Company 8
 Accept: application/json
 ###
 #Employee
@@ -16,7 +15,5 @@ Accept: application/json
 ###
 DELETE  {{api_HostAddress}}/employee/1
 Accept: application/json
-
-
 
 ###
