@@ -1,8 +1,10 @@
 using System.Collections;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Models;
 
+[Index(nameof(Name), nameof(Location), IsUnique = true)]
 public class Company : Entity
 {
     [MaxLength(256)]

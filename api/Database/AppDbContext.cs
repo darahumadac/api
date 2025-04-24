@@ -52,20 +52,49 @@ public class AppDbContext : DbContext
         optionsBuilder.UseSeeding((dbContext, _) =>
         {
             var random = new Random();
+            var companies = dbContext.Set<Company>();
+            if (companies.Count() == 0)
+            {
+                var newCompanies = Enumerable.Range(0, 10).Select(i =>
+                {
+                    return new Company()
+                    {
+                        Name = $"Company {i}",
+                        Description = $"Rank #{i} in best companies",
+                        Location = random.GetItems(["Singapore", "USA", "Philippines", "Japan"], 1)[0]
+                    };
+                });
+
+                companies.AddRange(newCompanies);
+                dbContext.SaveChanges();
+            }
+
             var employees = dbContext.Set<Employee>();
             if (employees.Count() == 0)
             {
-                var newEmployees = Enumerable.Range(0, 5).Select(i =>
+                var newEmployees = Enumerable.Range(0, 20).Select(i =>
                 {
+
+                    DateTime? startDate = null;
+                    string? companyId = null;
+                    if (i % 2 == 1)
+                    {
+                        startDate = DateTime.Now.AddDays(random.Next(31) * -1);
+                        companyId = companies.ToList()[random.Next(companies.Count())].Id;
+                    }
                     return new Employee()
                     {
-                        Name = $"Employee Test {i}",
+                        Name = $"Emp{i}",
                         Email = $"employee_{i}@test.com",
                         Phone = "81444444",
-                        Gender = i % 2 == 0
+                        Gender = i % 2 == 0,
+                        CompanyId = companyId,
+                        StartDate = startDate
+
                     };
                 });
                 employees.AddRange(newEmployees);
+                dbContext.SaveChanges();
             }
         });
     }
