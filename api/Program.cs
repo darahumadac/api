@@ -11,11 +11,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-var appDbConnectionString = builder.Configuration.GetConnectionString("AppDb") 
+var appDbConnectionString = builder.Configuration.GetConnectionString("AppDb")
     ?? throw new InvalidOperationException("No AppDB connection string found");
 var appDbConnectionStringBuilder = new SqlConnectionStringBuilder(appDbConnectionString);
 //build the connection string because we don't want to store sensitive info in appsettings.json
-if(!builder.Environment.IsDevelopment() || !appDbConnectionStringBuilder.IntegratedSecurity)
+if (!builder.Environment.IsDevelopment() || !appDbConnectionStringBuilder.IntegratedSecurity)
 {
     //get the credentials from the env variables
     builder.Configuration.AddEnvironmentVariables(prefix: "APP_");

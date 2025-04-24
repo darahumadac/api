@@ -22,7 +22,7 @@ public static partial class EmployeesEndpoints
         //map endpoints
         employee.MapPost("/", HandleAddEmployeeAsync)
             .WithName("AddEmployee");
-        
+
         employee.MapPut("/{id}", HandleUpdateEmployeeAsync)
             .WithName("UpdateEmployee");
 

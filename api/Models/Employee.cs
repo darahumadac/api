@@ -15,6 +15,6 @@ public class Employee : Entity
     public bool Gender { get; set; }
 
     public string? CompanyId { get; set; }
-    public Company? Company  { get; set; }
+    public Company? Company { get; set; }
     public DateTime? StartDate { get; set; }
 }

@@ -22,17 +22,17 @@ public class AppDbContext : DbContext
 
         modelBuilder.Entity<Company>()
             .Property(c => c.Id)
-            .HasConversion( 
+            .HasConversion(
                 v => Guid.Parse(v), //convert to guid when saving to db
                 v => v.ToString() //convert from guid (to string) when reading from db
             )
             .HasDefaultValueSql("NEWID()");
 
         //configure Auditable for each entity inheriting from it
-        foreach(var entityType in modelBuilder.Model.GetEntityTypes())
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
             var clrType = entityType.ClrType;
-            if(typeof(Entity).IsAssignableFrom(clrType) && clrType != typeof(Entity))
+            if (typeof(Entity).IsAssignableFrom(clrType) && clrType != typeof(Entity))
             {
                 modelBuilder.Entity(clrType)
                     .Property(nameof(Entity.CreatedDate))
@@ -49,13 +49,16 @@ public class AppDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSeeding((dbContext, _) => {
+        optionsBuilder.UseSeeding((dbContext, _) =>
+        {
             var random = new Random();
             var employees = dbContext.Set<Employee>();
-            if(employees.Count() == 0)
+            if (employees.Count() == 0)
             {
-                var newEmployees = Enumerable.Range(0,5).Select(i => {
-                    return new Employee(){
+                var newEmployees = Enumerable.Range(0, 5).Select(i =>
+                {
+                    return new Employee()
+                    {
                         Name = $"Employee Test {i}",
                         Email = $"employee_{i}@test.com",
                         Phone = "81444444",

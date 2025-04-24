@@ -1,24 +1,19 @@
-﻿using Microsoft.VisualBasic;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
-using NUnit.Framework;
-
-namespace api.tests;
+﻿namespace api.tests;
 
 using System.Threading.Tasks;
 using api.Contracts.Responses;
 using api.Endpoints;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using NUnit.Framework.Internal;
-using NUnit.Framework.Legacy;
+
 
 public class EmployeesApiTest
 {
-    
+
     [SetUp]
     public void SetupClient()
     {
-        
+
     }
 
     [Test]
@@ -27,11 +22,11 @@ public class EmployeesApiTest
     {
         var result = await EmployeesEndpoints.HandleGetEmployeesAsync(query);
         Assert.That(result, Is.TypeOf<Ok<IEnumerable<EmployeeResponse>>>());
-     
+
         //assert data
         // Assert.That(result.Value, Is.Not.Null);
         // Assert.That(expected, Is.EqualTo(result.Value.Select(d => d.Name).ToArray()));
-     
+
     }
 
     public static IEnumerable<TestCaseData> TestCasesGetEmployees()
@@ -41,7 +36,7 @@ public class EmployeesApiTest
             new TestCaseData("Rose", new string[]{"Rose"}),
             new TestCaseData("Sam", new string[]{})
         };
-        foreach(var tc in testCases)
+        foreach (var tc in testCases)
         {
             yield return tc;
         }

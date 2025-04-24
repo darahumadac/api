@@ -6,7 +6,7 @@ namespace api.Models;
 public class Company : Entity
 {
     [MaxLength(256)]
-    public required string Description { get; set; } 
+    public required string Description { get; set; }
     [MaxLength(100)]
     public required string Location { get; set; }
 
