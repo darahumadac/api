@@ -26,4 +26,9 @@ public class EmployeeService : IRepository<Employee>
             .Include(e => e.Company)
             .ToListAsync();
     }
+
+    public async Task<Employee?> GetById(string id)
+    {
+        return await dbContext.Employees.FindAsync(id);
+    }
 }

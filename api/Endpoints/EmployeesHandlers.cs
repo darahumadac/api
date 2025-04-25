@@ -8,28 +8,42 @@ namespace api.Endpoints;
 
 public static partial class EmployeesEndpoints
 {
-    public static async Task<Ok<IEnumerable<EmployeeResponse>>> HandleGetEmployeesAsync([FromQuery] string? company, IRepository<Employee> employeeService)
+    public static async Task<Ok<IEnumerable<GetEmployeesResponse>>> HandleGetEmployeesAsync([FromQuery] string? company, IRepository<Employee> employeeService)
     {
         var results = await employeeService.GetAll(e => string.IsNullOrEmpty(company) || e.Company != null && company.ToUpper() == e.Company.Name);
         var response = results
             .OrderByDescending(e => e.DaysWorked)
             .ThenBy(e => e.Name)
             .Select(
-            e => new EmployeeResponse(
+            e => new GetEmployeesResponse(
                 Id: e.Id,
                 Name: e.Name,
                 Email: e.Email,
                 Phone: e.Phone,
                 Gender: e.Gender,
+                PhotoUrl: e.PhotoUrl,
                 DaysWorked: e.DaysWorked,
-                CompanyName: e.Company?.Name,
-                PhotoUrl: e.PhotoUrl
+                CompanyName: e.Company?.Name
             ));
         return await Task.FromResult(TypedResults.Ok(response));
     }
-    public static async Task<Ok<string>> HandleGetEmployeeAsync()
+    public static async Task<Results<Ok<GetEmployeeByIdResponse>, NotFound>> HandleGetEmployeeAsync(string id, IRepository<Employee> employeeService)
     {
-        return await Task.FromResult(TypedResults.Ok(nameof(HandleGetEmployeeAsync)));
+        var employee = await employeeService.GetById(id);
+        if (employee == null)
+        {
+            return TypedResults.NotFound();
+        }
+        var response = new GetEmployeeByIdResponse(
+            Id: employee.Id,
+                Name: employee.Name,
+                Email: employee.Email,
+                Phone: employee.Phone,
+                Gender: employee.Gender,
+                PhotoUrl: employee.PhotoUrl,
+                CompanyId: employee.CompanyId
+        );
+        return TypedResults.Ok(response);
     }
 
     public static async Task<IResult> HandleUpdateEmployeeAsync()

@@ -1,10 +1,19 @@
 namespace api.Contracts.Responses;
-public record EmployeeResponse(
+public record GetEmployeesResponse(
     string Id,
     string Name,
     string Email,
     string Phone,
-    bool Gender,
+    int Gender,
+    string? PhotoUrl,
     int DaysWorked,
-    string? CompanyName,
-    string? PhotoUrl);
+    string? CompanyName);
+
+public record GetEmployeeByIdResponse(
+    string Id,
+    string Name,
+    string Email,
+    string Phone,
+    int Gender,
+    string? PhotoUrl,
+    string? CompanyId);

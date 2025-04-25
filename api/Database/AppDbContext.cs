@@ -19,6 +19,13 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Employee>()
             .Property(e => e.Id)
             .HasValueGenerator<EmployeeIdGenerator>();
+        
+        modelBuilder.Entity<Employee>()
+            .Property(e => e.Gender)
+            .HasConversion(
+                v => Convert.ToBoolean(v),
+                v => Convert.ToInt16(v)
+            );
 
         modelBuilder.Entity<Company>()
             .Property(c => c.Id)
@@ -87,7 +94,7 @@ public class AppDbContext : DbContext
                         Name = $"Emp{i}",
                         Email = $"employee_{i}@test.com",
                         Phone = "81444444",
-                        Gender = i % 2 == 0,
+                        Gender = Convert.ToInt16(i % 2 == 0),
                         CompanyId = companyId,
                         StartDate = startDate
 

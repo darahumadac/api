@@ -13,7 +13,7 @@ public class Employee : Entity
     [RegularExpression("^(8|9)[0-9]{7}$")]
     [MaxLength(8)]
     public required string Phone { get; set; }
-    public bool Gender { get; set; }
+    public int Gender { get; set; }
     public string? CompanyId { get; set; }
     public Company? Company { get; set; }
     public DateTime? StartDate { get; set; }
