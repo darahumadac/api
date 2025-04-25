@@ -6,5 +6,6 @@ public interface IRepository<T> where T : class
 {
     Task<List<T>> GetAllAsync(Expression<Func<T, bool>>? condition);
     Task<T?> GetByIdAsync(string id);
-    Task<bool> DeleteAsync(T resource);
+    Task DeleteAsync(T resource);
+    Task AddAsync(T resource);
 }

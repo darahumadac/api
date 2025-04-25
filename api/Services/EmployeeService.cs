@@ -32,22 +32,15 @@ public class EmployeeService : IRepository<Employee>
         return await dbContext.Employees.FindAsync(id);
     }
 
-    public async Task<bool> DeleteAsync(Employee e)
+    public async Task DeleteAsync(Employee e)
     {
-        using var transaction = await dbContext.Database.BeginTransactionAsync();
-        try
-        {
-            dbContext.Employees.Remove(e);
-            await dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
-            
-            return true;
-        }
-        catch(Exception ex)
-        {
-            //TODO: Add serilog logging here
-            return false;
-        }
-        
+        dbContext.Employees.Remove(e);
+        await dbContext.SaveChangesAsync();
+    }
+
+    public async Task AddAsync(Employee resource)
+    {
+        await dbContext.Employees.AddAsync(resource);
+        await dbContext.SaveChangesAsync();
     }
 }

@@ -51,9 +51,18 @@ public static partial class EmployeesEndpoints
     public static async Task<Results<CreatedAtRoute, ProblemHttpResult>> HandleAddEmployeeAsync(EmployeeData request, IRepository<Employee> employeeService)
     {
         //validation is handled via endpoint filter
+        var newEmployee = new Employee
+        {
+            Name = request.Name,
+            Email = request.Email,
+            Phone = request.Phone,
+            Gender = request.Gender,
+            CompanyId = request.CompanyId,
+            StartDate = DateTime.UtcNow,
+        };
 
-        // await employeeService.AddAsync()
-        return TypedResults.CreatedAtRoute("GetEmployeeById", new { id = "1" });
+        await employeeService.AddAsync(newEmployee);
+        return TypedResults.CreatedAtRoute("GetEmployeeById", new { id = newEmployee.Id });
     }
 
     public static async Task<IResult> HandleUpdateEmployeeAsync()
@@ -61,7 +70,7 @@ public static partial class EmployeesEndpoints
         return await Task.FromResult(Results.Ok(nameof(HandleUpdateEmployeeAsync)));
     }
 
-    public static async Task<Results<NoContent, NotFound, ProblemHttpResult>> HandleDeleteEmployeeAsync(string id, IRepository<Employee> employeeService)
+    public static async Task<Results<NoContent, NotFound>> HandleDeleteEmployeeAsync(string id, IRepository<Employee> employeeService)
     {
         var employee = await employeeService.GetByIdAsync(id);
         if (employee == null)
@@ -69,14 +78,8 @@ public static partial class EmployeesEndpoints
             return TypedResults.NotFound();
         }
 
-        var deleted = await employeeService.DeleteAsync(employee);
-        if (deleted)
-        {
-            return TypedResults.NoContent();
-        }
-
-        return TypedResults.Problem(statusCode: 500, detail: "There was an issue deleting the record. Check logs for more information");
-
+        await employeeService.DeleteAsync(employee);
+        return TypedResults.NoContent();
     }
 
 

@@ -3,6 +3,7 @@
 using api.Database;
 using api.Endpoints;
 using api.Services;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,6 +32,8 @@ builder.Services.AddCompanyServices();
 
 var app = builder.Build();
 
+app.UseExceptionHandler("/error");
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -40,6 +43,25 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.MapEmployeesApi();
+app.Map("/error", (HttpContext context, ILogger<Program> logger) =>
+{
+    var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
+
+    var ex = exceptionHandlerPathFeature?.Error;
+    if (ex != null)
+    {
+        logger.LogError(ex, "Unhandled exception occurred on path: {Path}", exceptionHandlerPathFeature?.Endpoint);
+    }
+
+    var problem = ex switch
+    {
+        DbUpdateException => Results.Problem(statusCode: StatusCodes.Status409Conflict, detail: "This record already exists. Check if you've already created it."),
+        _ => Results.Problem("An unexpected error occurred. Please try again later.")
+    };
+
+    return problem;
+});
+
 
 
 

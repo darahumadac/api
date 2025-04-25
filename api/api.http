@@ -3,17 +3,28 @@
 #Employees
 GET {{api_HostAddress}}/employees/
 ###
-GET {{api_HostAddress}}/employees?company=Company 8
-Accept: application/json
+GET {{api_HostAddress}}/employees?company=Company 9
+###
+GET {{api_HostAddress}}/employees/UIDzHYXLIRTKI
+
 ###
 #Employee
 POST {{api_HostAddress}}/employee
-Accept: application/json
+Content-Type: application/json
+
+{
+    "name": "Emp451",
+    "email": "test@test.test",
+    "phone": "99999999",
+    "gender": 1,
+    "companyId": "0BFDAEA4-B68F-44A1-BA2E-3F10371C43B1"
+}
+###
+GET {{api_HostAddress}}/employees/hs3bw6ZL
 ###
 PUT {{api_HostAddress}}/employee/1
 Accept: application/json
 ###
-DELETE  {{api_HostAddress}}/employee/1
-Accept: application/json
+DELETE  {{api_HostAddress}}/employee/UIGZYdk3UUz9a
 
 ###

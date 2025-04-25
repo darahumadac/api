@@ -12,7 +12,13 @@ public class CompanyService : IRepository<Company>
     {
         this.dbContext = dbContext;
     }
-    public Task<bool> DeleteAsync(Company resource)
+
+    public Task AddAsync(Company resource)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task DeleteAsync(Company resource)
     {
         throw new NotImplementedException();
     }
