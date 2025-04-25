@@ -33,16 +33,6 @@ builder.Services.AddCompanyServices();
 var app = builder.Build();
 
 app.UseExceptionHandler("/error");
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
-
-app.UseHttpsRedirection();
-
-app.MapEmployeesApi();
 app.Map("/error", (HttpContext context, ILogger<Program> logger) =>
 {
     var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
@@ -61,6 +51,18 @@ app.Map("/error", (HttpContext context, ILogger<Program> logger) =>
 
     return problem;
 });
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+}
+
+app.UseHttpsRedirection();
+
+//API Endpoints
+app.MapEmployeesApi();
+
 
 
 

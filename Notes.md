@@ -48,6 +48,7 @@
 4. Set up unit tests for the API. Use `NUnit` and create the test methods for the api handlers. Ensure that the handlers can be called and the types are asserted
 
 5. Create the database and the models. Add `Entity Framework` packages, then add 2 folders - `Database` and `Models`
+
    - Models should have `CreatedDate`, `UpdatedDate`, `RowVersion` (for concurrency). Create an `Auditable.cs` base class for this. This is the base model.
    - Draft the Models (for the resources) for the database.
    - Make sure to add the field constraints
@@ -95,20 +96,25 @@
    - Seed the database - by overriding `OnConfiguring(DbContextOptionsBuilder optionsBuilder)`
    - Run the migrations and update the database
 
-```bash
-# add the entity framework packages
-dotnet add Microsoft.EntityFrameworkCore.SqlServer
-dotnet add Microsoft.EntityFrameworkCore.Design
-dotnet add Microsoft.EntityFrameworkCore.Tools
+    ```bash
+    # add the entity framework packages
+    dotnet add Microsoft.EntityFrameworkCore.SqlServer
+    dotnet add Microsoft.EntityFrameworkCore.Design
+    dotnet add Microsoft.EntityFrameworkCore.Tools
 
-#add new directories - Database and Models
-mkdir Database Models
-```
+    #add new directories - Database and Models
+    mkdir Database Models
+    ```
 
 6. Create the `IRepository<T>` with the GetAll, Get, Add, Update, Delete method defintions
-7. For each *resource T*, create the *Service* class and implement the `IRepository<T>` interface so that the service can be injected as a dependency for the appropriate handler. This is the simplest implementation.
-    - If there is bloating in the dependencies injected in the handler, opt for **mediator pattern** using `MediatR` to decouple handler logic. This is used for **CQRS** also
-8. Add Validation using `FluentValidation`. Configure the request validation as an `IEndpointFilter`
+7. For each _resource T_, create the _Service_ class and implement the `IRepository<T>` interface so that the service can be injected as a dependency for the appropriate handler. This is the simplest implementation.
+   - If there is bloating in the dependencies injected in the handler, opt for **mediator pattern** using `MediatR` to decouple handler logic. This is used for **CQRS** also
+8. Add Validation for requests using `FluentValidation`. Requests should have a validator class that implements the `AbstractValidator<TRequest>`. Register the validator class as an imple,entation of the `IValidator<TRequest>` service.
+9. Add request validation as an endpoint filter.
+    - Create a class that implements from `IEndpointFilter` and add logic to validate the request. - Register this class as an endpoint filter to specific endpoints by calling `.AddEndpointFilter<TEndpointFilter>()`  
+10. Configure exception handling for unhandled exceptions 
+    - Add `app.Services.AddProblemDetails()` and `app.UseExceptionHandler(<endpoint_path>)` e.g. (`app.UseExceptionHandler("/error")`). in `Program.cs`
+    - Map the error endpoint path and add the logging for unhandled exceptions here, including returning of `Results.Problem(...)` depending on the exception type
 
 ### Creating Models
 
