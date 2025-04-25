@@ -27,6 +27,7 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(appD
 
 builder.Services.AddProblemDetails();
 builder.Services.AddEmployeeServices();
+builder.Services.AddCompanyServices();
 
 var app = builder.Build();
 

@@ -1,8 +1,10 @@
+using api.Contracts.Request;
 using api.Contracts.Responses;
 using api.Models;
 using api.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 
 namespace api.Endpoints;
 
@@ -46,8 +48,11 @@ public static partial class EmployeesEndpoints
         return TypedResults.Ok(response);
     }
 
-    public static async Task<Results<CreatedAtRoute, ValidationProblem, ProblemHttpResult>> HandleAddEmployeeAsync(IRepository<Employee> employeeService)
+    public static async Task<Results<CreatedAtRoute, ProblemHttpResult>> HandleAddEmployeeAsync(EmployeeData request, IRepository<Employee> employeeService)
     {
+        //validation is handled via endpoint filter
+
+        // await employeeService.AddAsync()
         return TypedResults.CreatedAtRoute("GetEmployeeById", new { id = "1" });
     }
 
@@ -56,7 +61,7 @@ public static partial class EmployeesEndpoints
         return await Task.FromResult(Results.Ok(nameof(HandleUpdateEmployeeAsync)));
     }
 
-    public static async Task<Results<NotFound, NoContent, ProblemHttpResult>> HandleDeleteEmployeeAsync(string id, IRepository<Employee> employeeService)
+    public static async Task<Results<NoContent, NotFound, ProblemHttpResult>> HandleDeleteEmployeeAsync(string id, IRepository<Employee> employeeService)
     {
         var employee = await employeeService.GetByIdAsync(id);
         if (employee == null)
@@ -70,7 +75,7 @@ public static partial class EmployeesEndpoints
             return TypedResults.NoContent();
         }
 
-        return TypedResults.Problem(statusCode: 500, detail: "There was an issue deleting the record");
+        return TypedResults.Problem(statusCode: 500, detail: "There was an issue deleting the record. Check logs for more information");
 
     }
 

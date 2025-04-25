@@ -12,7 +12,8 @@
 
 2. Identify the resources and draft the **endpoints** and **handlers** for them: `GET`, `POST`, `PUT`, `DELETE`.
 
-   - Make sure to use `TypedResults` and `Task<>
+   - Make sure to use `TypedResults`(e.g. `TypedResults.Ok(data)`) when returning the response and `Task`
+   - Type of `TypedResults` is `Results<T1, T2, T3..T6>` where `T1` to `T6` is an `IResult`
    - Create an extension class for the resource api and handlers so that endpoints are organized and so that the handlers can be accessed by the unit test
 
    ```c#
@@ -104,6 +105,11 @@ dotnet add Microsoft.EntityFrameworkCore.Tools
 mkdir Database Models
 ```
 
+6. Create the `IRepository<T>` with the GetAll, Get, Add, Update, Delete method defintions
+7. For each *resource T*, create the *Service* class and implement the `IRepository<T>` interface so that the service can be injected as a dependency for the appropriate handler. This is the simplest implementation.
+    - If there is bloating in the dependencies injected in the handler, opt for **mediator pattern** using `MediatR` to decouple handler logic. This is used for **CQRS** also
+8. Add Validation using `FluentValidation`. Configure the request validation as an `IEndpointFilter`
+
 ### Creating Models
 
 - Ensure they have `CreatedDate`, `UpdatedDate`, `byte[] ETag` properties for audit and concurrency checks
@@ -114,7 +120,9 @@ mkdir Database Models
 - Ensure that properties that can be computed are included in the model, but are not mapped
 
 ### Creating Services
+
 - Create an interface `IRepository<T>` to contain all the methods for GetAll(),Get(), Add(), Update(), Delete()
+
 ```c#
 // IRepository.cs
 public interface IRepository<T> where T : class
@@ -128,7 +136,9 @@ public interface IRepository<T> where T : class
     //DELETE
 }
 ```
+
 - Implement the `IRepository` interface for each service and register the service in `Program.cs`. Create an extension class for the services to be more organized
+
 ```c#
 // EmployeeService.cs
 public class EmployeeService : IRepository<Employee>
@@ -158,13 +168,17 @@ public static class ServiceExtensions
 #### IRepository<T>
 
 - Pass a condition/query/filter to a method as `Expression<Func<T, bool> condition> condition` when using it to query the `DbSet<T>` so that it can be passed to the where clause as `.Where(conditon)`
+- Return types should be `Task` or `Task<T>` and do not forget to follow naming convention `<method_name>Async`
+- Only perform db context operations here
 
 ## Testing APIs
+
 [Reference](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/test-min-api?view=aspnetcore-9.0)
+
 - Create unit test for each **Service implementation** by configuring and using In-Memory database
-    - (Reference)[https://github.com/dotnet/AspNetCore.Docs.Samples/blob/main/fundamentals/minimal-apis/samples/MinApiTestsSample/UnitTests/TodoInMemoryTests.cs]
+  - [Reference](https://github.com/dotnet/AspNetCore.Docs.Samples/blob/main/fundamentals/minimal-apis/samples/MinApiTestsSample/UnitTests/TodoInMemoryTests.cs)
 - Create unit test for the **API Endpoint Handler methods** by mocking the service implementations using `Moq`
-    - [Reference](https://github.com/dotnet/AspNetCore.Docs.Samples/blob/main/fundamentals/minimal-apis/samples/MinApiTestsSample/UnitTests/TodoMoqTests.cs)
+  - [Reference](https://github.com/dotnet/AspNetCore.Docs.Samples/blob/main/fundamentals/minimal-apis/samples/MinApiTestsSample/UnitTests/TodoMoqTests.cs)
 - Create integration tests for the API endpoints using `WebApplicationFactory<TEntrypoint>` and `HttpClient`. This is where query strings are tested
 
 ### Docker

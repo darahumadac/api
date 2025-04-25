@@ -11,6 +11,7 @@ public class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions options) : base(options) { }
     public DbSet<Employee> Employees { get; set; }
+    public DbSet<Company> Company { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
