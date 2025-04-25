@@ -15,7 +15,7 @@ public class EmployeeService : IRepository<Employee>
     }
 
     //Get all with optional filter expression
-    public async Task<List<Employee>> GetAll(Expression<Func<Employee, bool>>? condition)
+    public async Task<List<Employee>> GetAllAsync(Expression<Func<Employee, bool>>? condition)
     {
         IQueryable<Employee> employees = dbContext.Employees.AsQueryable();
         if (condition != null)
@@ -27,8 +27,27 @@ public class EmployeeService : IRepository<Employee>
             .ToListAsync();
     }
 
-    public async Task<Employee?> GetById(string id)
+    public async Task<Employee?> GetByIdAsync(string id)
     {
         return await dbContext.Employees.FindAsync(id);
+    }
+
+    public async Task<bool> DeleteAsync(Employee e)
+    {
+        using var transaction = await dbContext.Database.BeginTransactionAsync();
+        try
+        {
+            dbContext.Employees.Remove(e);
+            await dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+            
+            return true;
+        }
+        catch(Exception ex)
+        {
+            //TODO: Add serilog logging here
+            return false;
+        }
+        
     }
 }

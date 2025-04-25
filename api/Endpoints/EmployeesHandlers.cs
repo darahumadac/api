@@ -10,7 +10,7 @@ public static partial class EmployeesEndpoints
 {
     public static async Task<Ok<IEnumerable<GetEmployeesResponse>>> HandleGetEmployeesAsync([FromQuery] string? company, IRepository<Employee> employeeService)
     {
-        var results = await employeeService.GetAll(e => string.IsNullOrEmpty(company) || e.Company != null && company.ToUpper() == e.Company.Name);
+        var results = await employeeService.GetAllAsync(e => string.IsNullOrEmpty(company) || e.Company != null && company.ToUpper() == e.Company.Name);
         var response = results
             .OrderByDescending(e => e.DaysWorked)
             .ThenBy(e => e.Name)
@@ -29,7 +29,7 @@ public static partial class EmployeesEndpoints
     }
     public static async Task<Results<Ok<GetEmployeeByIdResponse>, NotFound>> HandleGetEmployeeAsync(string id, IRepository<Employee> employeeService)
     {
-        var employee = await employeeService.GetById(id);
+        var employee = await employeeService.GetByIdAsync(id);
         if (employee == null)
         {
             return TypedResults.NotFound();
@@ -46,19 +46,32 @@ public static partial class EmployeesEndpoints
         return TypedResults.Ok(response);
     }
 
+    public static async Task<Results<CreatedAtRoute, ValidationProblem, ProblemHttpResult>> HandleAddEmployeeAsync(IRepository<Employee> employeeService)
+    {
+        return TypedResults.CreatedAtRoute("GetEmployeeById", new { id = "1" });
+    }
+
     public static async Task<IResult> HandleUpdateEmployeeAsync()
     {
         return await Task.FromResult(Results.Ok(nameof(HandleUpdateEmployeeAsync)));
     }
 
-    public static async Task<IResult> HandleAddEmployeeAsync()
+    public static async Task<Results<NotFound, NoContent, ProblemHttpResult>> HandleDeleteEmployeeAsync(string id, IRepository<Employee> employeeService)
     {
-        return await Task.FromResult(Results.Ok(nameof(HandleAddEmployeeAsync)));
-    }
+        var employee = await employeeService.GetByIdAsync(id);
+        if (employee == null)
+        {
+            return TypedResults.NotFound();
+        }
 
-    public static async Task<IResult> HandleDeleteEmployeeAsync()
-    {
-        return await Task.FromResult(Results.Ok(nameof(HandleDeleteEmployeeAsync)));
+        var deleted = await employeeService.DeleteAsync(employee);
+        if (deleted)
+        {
+            return TypedResults.NoContent();
+        }
+
+        return TypedResults.Problem(statusCode: 500, detail: "There was an issue deleting the record");
+
     }
 
 

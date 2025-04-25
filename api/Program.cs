@@ -25,6 +25,7 @@ if (!builder.Environment.IsDevelopment() || !appDbConnectionStringBuilder.Integr
 }
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(appDbConnectionStringBuilder.ConnectionString));
 
+builder.Services.AddProblemDetails();
 builder.Services.AddEmployeeServices();
 
 var app = builder.Build();
