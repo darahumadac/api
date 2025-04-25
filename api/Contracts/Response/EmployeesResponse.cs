@@ -17,3 +17,11 @@ public record GetEmployeeByIdResponse(
     int Gender,
     string? PhotoUrl,
     string? CompanyId);
+
+public record UpdateEmployeeResponse(
+    string Name,
+    string Email,
+    string Phone,
+    int Gender,
+    string? CompanyId,
+    DateTime? StartDate);

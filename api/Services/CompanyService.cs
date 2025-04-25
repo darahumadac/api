@@ -1,35 +1,25 @@
 using System.Linq.Expressions;
 using api.Database;
 using api.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Services;
 
-public class CompanyService : IRepository<Company>
+public class CompanyService : RepositoryService<Company>
 {
-    private readonly AppDbContext dbContext;
+    public CompanyService(AppDbContext dbContext) : base(dbContext){}
 
-    public CompanyService(AppDbContext dbContext)
+    public override async Task<List<Company>> GetAllAsync(Expression<Func<Company, bool>>? condition)
     {
-        this.dbContext = dbContext;
+        return await GetAllQuery(condition)
+        .Include(c => c.Employees)
+        .ToListAsync();
     }
 
-    public Task AddAsync(Company resource)
+    public override async Task DeleteAsync(Company c)
     {
-        throw new NotImplementedException();
-    }
-
-    public Task DeleteAsync(Company resource)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<List<Company>> GetAllAsync(Expression<Func<Company, bool>>? condition)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<Company?> GetByIdAsync(string id)
-    {
-        return await dbContext.Company.FindAsync(id);
+        //load employees so they can be set to null by making use of cascading null behavior for optional relationship
+        await dbContext.Entry(c).Collection(c => c.Employees).LoadAsync();
+        await base.DeleteAsync(c);
     }
 }

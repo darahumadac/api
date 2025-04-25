@@ -3,9 +3,20 @@
 #Employees
 GET {{api_HostAddress}}/employees/
 ###
-GET {{api_HostAddress}}/employees?company=Company 9
+GET {{api_HostAddress}}/companies/
+
+
+###
+GET {{api_HostAddress}}/employees?company=CoMpany 8
+###
+GET {{api_HostAddress}}/companies?location=japan
+
+
 ###
 GET {{api_HostAddress}}/employees/UIDzHYXLIRTKI
+###
+GET {{api_HostAddress}}/companies/e79bfa50-f680-4aa4-846f-66e57a6d1f79
+
 
 ###
 #Employee
@@ -13,18 +24,53 @@ POST {{api_HostAddress}}/employee
 Content-Type: application/json
 
 {
-    "name": "Emp451",
+    "name": "EmpForUp",
     "email": "test@test.test",
     "phone": "99999999",
-    "gender": 1,
-    "companyId": "0BFDAEA4-B68F-44A1-BA2E-3F10371C43B1"
+    "gender": 1
 }
 ###
-GET {{api_HostAddress}}/employees/hs3bw6ZL
+POST {{api_HostAddress}}/company
+Content-Type: application/json
+
+{
+    "name": "Company 11",
+    "description": "Rank #11 in the world",
+    "location": "Singapore"
+}
+
 ###
-PUT {{api_HostAddress}}/employee/1
-Accept: application/json
+GET {{api_HostAddress}}/employees/UIabWcNMtynha
 ###
-DELETE  {{api_HostAddress}}/employee/UIGZYdk3UUz9a
+PUT {{api_HostAddress}}/employee/UIabWcNMtynha
+Content-Type: application/json
+
+{
+    "name": "EmpUpdated",
+    "email": "updated@test.test",
+    "phone": "88888878",
+    "gender": 0,
+    "photoUrl": null,
+    "companyId": "0bfdaea4-b68f-44a1-ba2e-3f10371c43b1"
+}
+
+
+###
+GET {{api_HostAddress}}/companies/e79bfa50-f680-4aa4-846f-66e57a6d1f79
+###
+PUT {{api_HostAddress}}/company/e79bfa50-f680-4aa4-846f-66e57a6d1f79
+Content-Type: application/json
+
+{
+    "name": "Updated 11",
+    "description": "Rank #11 in the world - updated",
+    "location": "Singapore - updated"
+}
+
+
+###
+DELETE  {{api_HostAddress}}/employee/UIKeBZnuAKU0b
+###
+DELETE  {{api_HostAddress}}/company/c6ed62d9-9f23-40c3-8967-967d8905f67b
 
 ###

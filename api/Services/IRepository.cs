@@ -8,4 +8,5 @@ public interface IRepository<T> where T : class
     Task<T?> GetByIdAsync(string id);
     Task DeleteAsync(T resource);
     Task AddAsync(T resource);
+    Task UpdateAsync(T resource);
 }

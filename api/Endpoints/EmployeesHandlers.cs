@@ -12,7 +12,7 @@ public static partial class EmployeesEndpoints
 {
     public static async Task<Ok<IEnumerable<GetEmployeesResponse>>> HandleGetEmployeesAsync([FromQuery] string? company, IRepository<Employee> employeeService)
     {
-        var results = await employeeService.GetAllAsync(e => string.IsNullOrEmpty(company) || e.Company != null && company.ToUpper() == e.Company.Name);
+        var results = await employeeService.GetAllAsync(e => string.IsNullOrEmpty(company) || e.Company != null && company == e.Company.Name);
         var response = results
             .OrderByDescending(e => e.DaysWorked)
             .ThenBy(e => e.Name)
@@ -27,7 +27,7 @@ public static partial class EmployeesEndpoints
                 DaysWorked: e.DaysWorked,
                 CompanyName: e.Company?.Name
             ));
-        return await Task.FromResult(TypedResults.Ok(response));
+        return TypedResults.Ok(response);
     }
     public static async Task<Results<Ok<GetEmployeeByIdResponse>, NotFound>> HandleGetEmployeeAsync(string id, IRepository<Employee> employeeService)
     {
@@ -48,7 +48,7 @@ public static partial class EmployeesEndpoints
         return TypedResults.Ok(response);
     }
 
-    public static async Task<Results<CreatedAtRoute, ProblemHttpResult>> HandleAddEmployeeAsync(EmployeeData request, IRepository<Employee> employeeService)
+    public static async Task<CreatedAtRoute> HandleAddEmployeeAsync(EmployeeRequest request, IRepository<Employee> employeeService)
     {
         //validation is handled via endpoint filter
         var newEmployee = new Employee
@@ -65,9 +65,38 @@ public static partial class EmployeesEndpoints
         return TypedResults.CreatedAtRoute("GetEmployeeById", new { id = newEmployee.Id });
     }
 
-    public static async Task<IResult> HandleUpdateEmployeeAsync()
+    public static async Task<Results<Ok<UpdateEmployeeResponse>, NotFound>> HandleUpdateEmployeeAsync(EmployeeRequest request, string id, IRepository<Employee> employeeService)
     {
-        return await Task.FromResult(Results.Ok(nameof(HandleUpdateEmployeeAsync)));
+        var existingEmployee = await employeeService.GetByIdAsync(id);
+        if (existingEmployee == null)
+        {
+            return TypedResults.NotFound();
+        }
+
+        existingEmployee.Name = request.Name;
+        existingEmployee.Email = request.Email;
+        existingEmployee.Phone = request.Phone;
+        existingEmployee.Gender = request.Gender;
+
+        var updateDate = DateTime.UtcNow;
+        if(existingEmployee.CompanyId != request.CompanyId)
+        {
+            existingEmployee.CompanyId = request.CompanyId;
+            existingEmployee.StartDate = request.CompanyId != null ? updateDate : null;
+        }
+        existingEmployee.UpdatedDate = updateDate;
+
+        await employeeService.UpdateAsync(existingEmployee);
+
+        var response = new UpdateEmployeeResponse(
+            Name: existingEmployee.Name,
+            Email: existingEmployee.Email,
+            Phone: existingEmployee.Phone,
+            Gender: existingEmployee.Gender,
+            CompanyId: existingEmployee.CompanyId,
+            StartDate: existingEmployee.StartDate
+        );
+        return TypedResults.Ok(response);
     }
 
     public static async Task<Results<NoContent, NotFound>> HandleDeleteEmployeeAsync(string id, IRepository<Employee> employeeService)

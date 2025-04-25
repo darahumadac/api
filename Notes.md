@@ -109,7 +109,8 @@
 6. Create the `IRepository<T>` with the GetAll, Get, Add, Update, Delete method defintions
 7. For each _resource T_, create the _Service_ class and implement the `IRepository<T>` interface so that the service can be injected as a dependency for the appropriate handler. This is the simplest implementation.
    - If there is bloating in the dependencies injected in the handler, opt for **mediator pattern** using `MediatR` to decouple handler logic. This is used for **CQRS** also
-8. Add Validation for requests using `FluentValidation`. Requests should have a validator class that implements the `AbstractValidator<TRequest>`. Register the validator class as an imple,entation of the `IValidator<TRequest>` service.
+8. All text inputs must be sanitized, html encoded, and normalized.
+8. Add Validation for create and update requests using `FluentValidation`. Requests should have a validator class that implements the `AbstractValidator<TRequest>`. Register the validator class as an imple,entation of the `IValidator<TRequest>` service.
 9. Add request validation as an endpoint filter.
     - Create a class that implements from `IEndpointFilter` and add logic to validate the request. - Register this class as an endpoint filter to specific endpoints by calling `.AddEndpointFilter<TEndpointFilter>()`  
 10. Configure exception handling for unhandled exceptions 
@@ -128,6 +129,12 @@
 ### Creating Services
 
 - Create an interface `IRepository<T>` to contain all the methods for GetAll(),Get(), Add(), Update(), Delete()
+- **Tip:** implement the methods from easiest to hardest 
+    - GET all + Get all with query
+    - GET by id
+    - DELETE by id
+    - POST
+    - PUT
 
 ```c#
 // IRepository.cs

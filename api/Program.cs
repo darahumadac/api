@@ -26,6 +26,10 @@ if (!builder.Environment.IsDevelopment() || !appDbConnectionStringBuilder.Integr
 }
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(appDbConnectionStringBuilder.ConnectionString));
 
+//TODO: add sanitation/html encoding/normalization for data
+//TODO: Add serilog
+//TODO: Add caching and etag / concurrency check
+
 builder.Services.AddProblemDetails();
 builder.Services.AddEmployeeServices();
 builder.Services.AddCompanyServices();
@@ -46,6 +50,7 @@ app.Map("/error", (HttpContext context, ILogger<Program> logger) =>
     var problem = ex switch
     {
         DbUpdateException => Results.Problem(statusCode: StatusCodes.Status409Conflict, detail: "This record already exists. Check if you've already created it."),
+        BadHttpRequestException => Results.Problem(statusCode: StatusCodes.Status400BadRequest, detail: "The request was not understood. Please ensure your input is properly formatted"),
         _ => Results.Problem("An unexpected error occurred. Please try again later.")
     };
 
@@ -62,6 +67,7 @@ app.UseHttpsRedirection();
 
 //API Endpoints
 app.MapEmployeesApi();
+app.MapCompanyApi();
 
 
 

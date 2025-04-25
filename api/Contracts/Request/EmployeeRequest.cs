@@ -6,13 +6,13 @@ using FluentValidation;
 namespace api.Contracts.Request;
 
  //note: photo upload is handled by photo api
-public record EmployeeData(
+public record EmployeeRequest(
     string Name,
     string Email,
     string Phone,
     int Gender,
     string? CompanyId);
-public class EmployeeDataValidator : AbstractValidator<EmployeeData>
+public class EmployeeDataValidator : AbstractValidator<EmployeeRequest>
 {
     public EmployeeDataValidator(IRepository<Company> companyService)
     {

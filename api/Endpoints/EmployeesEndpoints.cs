@@ -24,10 +24,11 @@ public static partial class EmployeesEndpoints
 
         //map endpoints
         employee.MapPost("/", HandleAddEmployeeAsync)
-            .AddEndpointFilter<ValidateRequestFilter<EmployeeData>>()
+            .AddEndpointFilter<ValidateRequestFilter<EmployeeRequest>>()
             .WithName("AddEmployee");
 
         employee.MapPut("/{id}", HandleUpdateEmployeeAsync)
+            .AddEndpointFilter<ValidateRequestFilter<EmployeeRequest>>()
             .WithName("UpdateEmployee");
 
         employee.MapDelete("/{id}", HandleDeleteEmployeeAsync)

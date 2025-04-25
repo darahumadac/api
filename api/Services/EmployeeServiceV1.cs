@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace api.Services;
 
-public class EmployeeService : IRepository<Employee>
+public class EmployeeServiceV1 : IRepository<Employee>
 {
     private readonly AppDbContext dbContext;
 
-    public EmployeeService(AppDbContext dbContext)
+    public EmployeeServiceV1(AppDbContext dbContext)
     {
         this.dbContext = dbContext;
     }
@@ -41,6 +41,12 @@ public class EmployeeService : IRepository<Employee>
     public async Task AddAsync(Employee resource)
     {
         await dbContext.Employees.AddAsync(resource);
+        await dbContext.SaveChangesAsync();
+    }
+
+    public async Task UpdateAsync(Employee resource)
+    {
+        dbContext.Employees.Update(resource);
         await dbContext.SaveChangesAsync();
     }
 }
