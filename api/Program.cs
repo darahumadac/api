@@ -75,8 +75,4 @@ app.MapEmployeesApi();
 app.MapCompanyApi();
 
 
-
-
-
-
 app.Run();
