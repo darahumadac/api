@@ -49,8 +49,13 @@ app.Map("/error", (HttpContext context, ILogger<Program> logger) =>
 
     var problem = ex switch
     {
-        DbUpdateException => Results.Problem(statusCode: StatusCodes.Status409Conflict, detail: "This record already exists. Check if you've already created it."),
+        DbUpdateException => 
+            ex.InnerException is SqlException sqlEx && (sqlEx.Number == 2601 || sqlEx.Number == 2627) ? 
+            Results.Problem(statusCode: StatusCodes.Status409Conflict, detail: "This record already exists. Check if you've already created it.") 
+            : Results.Problem(statusCode: StatusCodes.Status500InternalServerError, detail: "Error encountered while saving data update. Please try again later."),
+        
         BadHttpRequestException => Results.Problem(statusCode: StatusCodes.Status400BadRequest, detail: "The request was not understood. Please ensure your input is properly formatted"),
+        
         _ => Results.Problem("An unexpected error occurred. Please try again later.")
     };
 
